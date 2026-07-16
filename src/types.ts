@@ -36,4 +36,6 @@ export interface Config {
   simStepsPerFrame: number;
   /** Height magnitude that maps to the extreme end of the palette LUT (trough/crest). */
   heightMax: number;
+  /** Optional Phase 5 polish: px of y-shift per unit of height, for a subtle shimmer. 0 disables it. */
+  shimmerPxPerHeight: number;
 }

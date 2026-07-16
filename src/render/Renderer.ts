@@ -26,6 +26,7 @@ export class Renderer {
   private readonly paletteLut: Uint32Array;
 
   private dots: Sprite[] = [];
+  private baseY: Float32Array = new Float32Array(0);
   private resizeTimer: ReturnType<typeof setTimeout> | undefined;
 
   /** Current grid dimensions, read-only from the outside. */
@@ -98,6 +99,7 @@ export class Renderer {
 
     const calmTint = this.paletteLut[heightToLutIndex(0)];
     this.dots = new Array(this.cols * this.rows);
+    this.baseY = new Float32Array(this.cols * this.rows);
 
     // Offset by half a cell so every dot's center — and thus its full circle
     // — lands inside the canvas, instead of the first row/column sitting
@@ -107,10 +109,13 @@ export class Renderer {
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
         const dot = new Sprite({ texture: this.dotTexture, anchor: 0.5 });
+        const y = row * config.dotSpacingPx + offset;
         dot.x = col * config.dotSpacingPx + offset;
-        dot.y = row * config.dotSpacingPx + offset;
+        dot.y = y;
         dot.tint = calmTint;
-        this.dots[row * this.cols + col] = dot;
+        const index = row * this.cols + col;
+        this.dots[index] = dot;
+        this.baseY[index] = y;
         this.dotLayer.addChild(dot);
       }
     }
@@ -119,14 +124,17 @@ export class Renderer {
   }
 
   /**
-   * Reads sim heights and writes per-dot tints, one LUT lookup per dot, no
-   * allocation. Bounds the loop to the shorter of the two arrays so a stale
-   * frame during the resize-rebuild window can't index out of range.
+   * Reads sim heights and writes per-dot tints and the shimmer y-offset, one
+   * LUT lookup per dot, no allocation. Bounds the loop to the shorter of the
+   * two arrays so a stale frame during the resize-rebuild window can't index
+   * out of range.
    */
   render(state: SimulationState): void {
     const count = Math.min(this.dots.length, state.heights.length);
     for (let i = 0; i < count; i++) {
-      this.dots[i].tint = this.paletteLut[heightToLutIndex(state.heights[i])];
+      const height = state.heights[i];
+      this.dots[i].tint = this.paletteLut[heightToLutIndex(height)];
+      this.dots[i].y = this.baseY[i] + height * config.shimmerPxPerHeight;
     }
   }
 }

@@ -29,4 +29,10 @@ export const config: Config = {
    * Default: 80
    */
   heightMax: 160,
+  /**
+   * Optional shimmer (§6 Phase 5 polish): px of y-shift per unit of height.
+   * Default: 0.03
+   * Set to 0 to cut it instantly if frame budget gets tight — no code change needed.
+   */
+  shimmerPxPerHeight: 0.08,
 };
