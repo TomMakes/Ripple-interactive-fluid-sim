@@ -54,7 +54,7 @@ export class Renderer {
     const app = new Application();
     await app.init({
       resizeTo: container,
-      backgroundColor: 0x06120f, // §6: near-black green
+      backgroundColor: 0x1E5444, // 0x06120f, // §6: near-black green
       antialias: true,
       autoDensity: true,
       resolution: window.devicePixelRatio || 1,

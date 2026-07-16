@@ -1,4 +1,5 @@
 import { config } from './config';
+import { PointerInput } from './input/PointerInput';
 import { Renderer } from './render/Renderer';
 import { Simulation } from './sim/Simulation';
 
@@ -16,20 +17,13 @@ async function bootstrap(): Promise<void> {
 
   let sim = new Simulation(renderer.cols, renderer.rows);
 
-  // Phase 3 checkpoint: one hardcoded disturbance at startup proves sim →
-  // renderer wiring end-to-end (expands, reflects off edges, fades).
-  sim.disturb({
-    gx: sim.cols / 2,
-    gy: sim.rows / 2,
-    radius: config.clickRadius,
-    strength: config.clickStrength,
-  });
-
   // The dot grid and the heightfield must share dimensions; when the grid
   // is rebuilt on resize, start a fresh calm sim to match.
   renderer.onResize = (cols, rows) => {
     sim = new Simulation(cols, rows);
   };
+
+  new PointerInput(renderer.app.canvas, config, (options) => sim.disturb(options));
 
   renderer.app.ticker.add(() => {
     for (let i = 0; i < config.simStepsPerFrame; i++) {
