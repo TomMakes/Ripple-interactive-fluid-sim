@@ -26,9 +26,19 @@ export class Renderer {
   private readonly paletteLut: Uint32Array;
 
   private dots: Sprite[] = [];
-  private cols = 0;
-  private rows = 0;
   private resizeTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /** Current grid dimensions, read-only from the outside. */
+  cols = 0;
+  rows = 0;
+
+  /**
+   * Fired after buildGrid() rebuilds the dot pool (initial build and every
+   * debounced resize). The composition root uses this to keep the
+   * Simulation's dimensions in sync — Renderer itself knows nothing about
+   * Simulation, per §4.
+   */
+  onResize?: (cols: number, rows: number) => void;
 
   private constructor(app: Application) {
     this.app = app;
@@ -104,10 +114,19 @@ export class Renderer {
         this.dotLayer.addChild(dot);
       }
     }
+
+    this.onResize?.(this.cols, this.rows);
   }
 
-  /** Reads sim heights and writes per-dot tints. Implemented in Phase 3. */
-  render(_state: SimulationState): void {
-    // TODO(Phase 3): map each cell's height through the palette LUT to a tint.
+  /**
+   * Reads sim heights and writes per-dot tints, one LUT lookup per dot, no
+   * allocation. Bounds the loop to the shorter of the two arrays so a stale
+   * frame during the resize-rebuild window can't index out of range.
+   */
+  render(state: SimulationState): void {
+    const count = Math.min(this.dots.length, state.heights.length);
+    for (let i = 0; i < count; i++) {
+      this.dots[i].tint = this.paletteLut[heightToLutIndex(state.heights[i])];
+    }
   }
 }
