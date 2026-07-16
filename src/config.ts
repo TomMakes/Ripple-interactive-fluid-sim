@@ -22,4 +22,10 @@ export const config: Config = {
   dragStrengthMax: 120,
   /** Physics steps per rendered frame. 1 keeps sim and render in lockstep. */
   simStepsPerFrame: 1,
+  /**
+   * Height magnitude mapped to the palette's trough/crest extremes (§6). Not
+   * one of the plan's §5 starter constants — a Phase 2 judgment call, ballparked
+   * against CLICK_STRENGTH; retune in Phase 5 once real waves are on screen.
+   */
+  heightMax: 80,
 };

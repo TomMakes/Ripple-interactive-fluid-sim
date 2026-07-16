@@ -34,4 +34,6 @@ export interface Config {
   dragStrengthPerPxOfSpeed: number;
   dragStrengthMax: number;
   simStepsPerFrame: number;
+  /** Height magnitude that maps to the extreme end of the palette LUT (trough/crest). */
+  heightMax: number;
 }
