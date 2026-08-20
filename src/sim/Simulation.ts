@@ -16,6 +16,7 @@ export class Simulation implements SimulationState {
   private prev: Float32Array;
   private curr: Float32Array;
 
+  /** Allocates a calm (all-zero) heightfield of the given size. */
   constructor(cols: number, rows: number) {
     this.cols = cols;
     this.rows = rows;
@@ -23,6 +24,7 @@ export class Simulation implements SimulationState {
     this.curr = new Float32Array(cols * rows);
   }
 
+  /** Current displacement per cell, row-major. Do not mutate; owned by step()/disturb(). */
   get heights(): Float32Array {
     return this.curr;
   }

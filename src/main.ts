@@ -2,17 +2,25 @@ import { config } from './config';
 import { PointerInput } from './input/PointerInput';
 import { Renderer } from './render/Renderer';
 import { Simulation } from './sim/Simulation';
+import type { Config } from './types';
 
 /**
- * Composition root. The only file that knows about every module; everything
- * else receives its dependencies via constructor (see §4).
+ * Facade for embedding (§4): boots the whole toy into `container` with one
+ * call. `configOverrides` are merged onto the shared tunables in config.ts
+ * before anything is constructed, so a host page can, say, drop the dot
+ * spacing without touching this file.
  */
-async function bootstrap(): Promise<void> {
-  const container = document.getElementById('app');
-  if (!container) {
-    throw new Error('#app container not found in index.html');
-  }
+export function createFluidSim(container: HTMLElement, configOverrides?: Partial<Config>): void {
+  Object.assign(config, configOverrides);
+  void bootstrap(container);
+}
 
+/**
+ * Composition root (§4): builds the simulation, renderer, and input, then
+ * runs the frame loop. The only function that knows about every module;
+ * everything else receives its dependencies via constructor.
+ */
+async function bootstrap(container: HTMLElement): Promise<void> {
   const renderer = await Renderer.create(container);
 
   let sim = new Simulation(renderer.cols, renderer.rows);
@@ -33,4 +41,8 @@ async function bootstrap(): Promise<void> {
   });
 }
 
-bootstrap();
+const container = document.getElementById('app');
+if (!container) {
+  throw new Error('#app container not found in index.html');
+}
+createFluidSim(container);

@@ -19,6 +19,7 @@ const RESIZE_DEBOUNCE_MS = 200;
  * more stable to build a tutorial around.
  */
 export class Renderer {
+  /** The underlying Pixi application; exposed so main.ts can drive its ticker. */
   readonly app: Application;
 
   private readonly dotTexture: Texture;
@@ -51,6 +52,7 @@ export class Renderer {
     this.app.renderer.on('resize', () => this.scheduleGridRebuild());
   }
 
+  /** Boots a Pixi Application into `container` and builds the initial dot grid. */
   static async create(container: HTMLElement): Promise<Renderer> {
     const app = new Application();
     await app.init({

@@ -18,6 +18,7 @@ export class PointerInput {
   private lastGy = 0;
   private lastTimeMs = 0;
 
+  /** Attaches Pointer Event listeners to `canvas`; nothing fires until the user interacts. */
   constructor(canvas: HTMLCanvasElement, config: Config, onDisturb: DisturbCallback) {
     this.canvas = canvas;
     this.config = config;
